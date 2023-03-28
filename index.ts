@@ -6,22 +6,24 @@ import {
     isOperationalError,
     logError,
     returnError,
+    streamError,
 } from "./components/errors/error-handlers";
 import { Container } from "./services/container";
 import { IncomingMessage } from "http";
+import winston from "winston";
 import { assignId } from "./utils";
+import { logger } from "./components/loggers";
 
 dotenv.config();
 export const app = express();
 app.use(assignId);
-app.use(morgan(":id :method :url :response-time"));
+app.use(morgan(":id :method :url :response-time", { stream: streamError }));
 app.use(express.json());
 app.use(route);
 app.use(logError);
 app.use(returnError);
 
 morgan.token("id", (req: IncomingMessage & Request) => {
-    console.log(req.id);
     return req.id;
 });
 
@@ -29,7 +31,7 @@ const container = new Container();
 container.db.connect();
 
 process.on("uncaughtException", (error) => {
-    logError(error);
+    logger.error(error);
 
     if (!isOperationalError(error)) {
         process.exit(1);

@@ -12,7 +12,6 @@ export class DAL implements IDAL {
         try {
             return await ArticleModel.searchFullText(keyword);
         } catch (e) {
-            console.log("Must here");
             throw e;
         }
     }
