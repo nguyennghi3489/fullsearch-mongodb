@@ -1,5 +1,10 @@
 import mongoose, { Model, Schema, Document } from "mongoose";
 
+export interface IContext {
+    action: string;
+    data: any;
+}
+
 export interface IArticle extends Document {
     title: string;
     author: string;
@@ -12,9 +17,21 @@ interface IArticleModel extends Model<IArticle> {
 
 export const ArticleSchema = new Schema(
     {
-        title: { type: String, index: "text", required: true },
-        author: { type: String, index: "text", required: true },
-        body: { type: String, index: "text", required: true },
+        title: {
+            type: String,
+            index: "text",
+            required: [true, "Missing Title Field"],
+        },
+        author: {
+            type: String,
+            index: "text",
+            required: [true, "Missing Author Field"],
+        },
+        body: {
+            type: String,
+            index: "text",
+            required: [true, "Missing Body Field"],
+        },
     },
     {
         statics: {
