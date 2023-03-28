@@ -36,7 +36,11 @@ export const ArticleSchema = new Schema(
     {
         statics: {
             searchFullText(keyword) {
-                return this.find({ $text: { $search: `\\${keyword}\\` } });
+                try {
+                    return this.find({ $text: { $search: `\\${keyword}\\` } });
+                } catch (e) {
+                    throw e;
+                }
             },
         },
     }

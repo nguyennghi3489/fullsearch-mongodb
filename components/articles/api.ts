@@ -1,46 +1,66 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { Container } from "../../services/container";
 
 const route = Router();
 const container = new Container();
 
-route.get("/articles", async (req: Request, res: Response) => {
-    const {
-        query: { keyword },
-    } = req;
+route.get(
+    "/articles",
+    async (req: Request, res: Response, next: NextFunction) => {
+        const {
+            query: { keyword },
+        } = req;
 
-    const context = {
-        action: "SEARCH",
-        data: keyword,
-    };
+        const context = {
+            action: "SEARCH",
+            data: keyword,
+        };
 
-    const result = await container.getService().excute(context);
+        try {
+            const result = await container.getService().excute(context);
+            res.send(JSON.stringify(result));
+        } catch (e) {
+            next(e);
+        }
+    }
+);
 
-    res.send(JSON.stringify(result));
-});
+route.post(
+    "/articles",
+    async (req: Request, res: Response, next: NextFunction) => {
+        const data = req.body;
 
-route.post("/articles", async (req: Request, res: Response) => {
-    const data = req.body;
+        const context = {
+            action: "CREATE",
+            data,
+        };
 
-    const context = {
-        action: "CREATE",
-        data,
-    };
+        try {
+            const result = await container.getService().excute(context);
+            res.send(JSON.stringify(result));
+        } catch (e) {
+            next(e);
+        }
+    }
+);
 
-    const result = await container.getService().excute(context);
-    res.send(JSON.stringify(result));
-});
+route.put(
+    "/articles",
+    async (req: Request, res: Response, next: NextFunction) => {
+        const data = req.body;
 
-route.put("/articles", async (req: Request, res: Response) => {
-    const data = req.body;
+        const context = {
+            action: "EDIT",
+            data,
+        };
 
-    const context = {
-        action: "EDIT",
-        data,
-    };
-
-    const result = await container.getService().excute(context);
-    res.send(JSON.stringify(result));
-});
+        try {
+            const result = await container.getService().excute(context);
+            res.send(JSON.stringify(result));
+        } catch (e) {
+            next(e);
+        }
+    }
+);
 
 export default route;

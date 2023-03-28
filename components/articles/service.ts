@@ -31,6 +31,8 @@ export class Service {
                 default:
                     return null;
             }
-        } catch (e) {}
+        } catch (e) {
+            throw e;
+        }
     }
 }

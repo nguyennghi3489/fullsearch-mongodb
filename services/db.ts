@@ -1,14 +1,20 @@
 import mongoose from "mongoose";
+import { AppError } from "../components/errors";
 
 export class DBConnection {
     url = "mongodb://127.0.0.1:27017/test";
     constructor() {}
-    connect() {
+    async connect() {
         try {
-            mongoose.connect(this.url);
-            console.log("connect to mongo");
+            await mongoose.connect(this.url);
+            console.log("MongoDB is connected");
         } catch (error) {
-            console.log(error);
+            throw new AppError(
+                "Mongo connection problem",
+                0,
+                JSON.stringify(error.errors),
+                true
+            );
         }
     }
 }

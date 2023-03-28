@@ -3,9 +3,10 @@ import { Service } from "../components/articles/service";
 import { DBConnection } from "./db";
 
 export class Container {
+    db: DBConnection;
     constructor() {
-        let db = new DBConnection();
-        db.connect();
+        this.db = new DBConnection();
+        return this;
     }
 
     getService() {

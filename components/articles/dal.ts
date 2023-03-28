@@ -1,4 +1,4 @@
-import { Error } from "mongoose";
+import { AppError } from "../errors";
 import { ArticleModel, IArticle } from "./model";
 
 export interface IDAL {
@@ -8,24 +8,30 @@ export interface IDAL {
 }
 
 export class DAL implements IDAL {
-    constructor() {}
-
     async searchByKeyword(keyword: string): Promise<IArticle[]> {
-        return await ArticleModel.searchFullText(keyword);
+        try {
+            return await ArticleModel.searchFullText(keyword);
+        } catch (e) {
+            console.log("Must here");
+            throw e;
+        }
     }
 
     async createArticle(article: IArticle) {
         const newArticle = new ArticleModel(article);
         const error = newArticle.validateSync();
         if (error) {
-            console.log(error.errors);
-            return null;
+            throw new AppError(
+                "Invalid Input",
+                404,
+                JSON.stringify(error.errors),
+                true
+            );
         }
         return await ArticleModel.create(article);
     }
 
     async editArticle(article: IArticle) {
-        console.log(article);
         try {
             const editingArticle = await ArticleModel.findOneAndUpdate(
                 { id: article.id },
@@ -33,10 +39,13 @@ export class DAL implements IDAL {
                 { runValidators: true }
             );
             return editingArticle;
-        } catch (e) {
-            console.log(e);
-            console.log(e.errors.body.message);
-            return null;
+        } catch (error) {
+            throw new AppError(
+                "Invalid Input",
+                404,
+                JSON.stringify(error.errors),
+                true
+            );
         }
     }
 }
