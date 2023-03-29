@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { loggers } from "winston";
+import * as Sentry from "@sentry/node";
 import { AppError } from ".";
 import { logger } from "../loggers";
 
@@ -14,6 +14,7 @@ export function returnError(
     next: NextFunction
 ) {
     logger.error(err);
+    Sentry.captureException(err);
     res.status(err.statusCode || 500).send(err.message);
 }
 
